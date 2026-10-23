@@ -73,6 +73,14 @@ jobs:
         working-directory: goodjob-source/whatsapp-plugin
         run: npm ci --ignore-scripts=false
 
+      - name: Capture dependency audit reports
+        if: always() && steps.install-root.conclusion == 'success' && steps.install-whatsapp.conclusion == 'success'
+        working-directory: goodjob-source
+        run: |
+          mkdir -p ../migration-artifacts
+          npm audit --json > ../migration-artifacts/npm-audit-root.json || echo "Root npm audit reported findings; JSON report retained."
+          npm --prefix whatsapp-plugin audit --json > ../migration-artifacts/npm-audit-whatsapp.json || echo "WhatsApp npm audit reported findings; JSON report retained."
+
       - name: Build all upstream packages
         id: build
         working-directory: goodjob-source
@@ -99,5 +107,7 @@ jobs:
             goodjob-source/**/npm-debug.log
             migration-artifacts/mysql-schema-inventory.json
             migration-artifacts/mysql-dialect-audit.json
+            migration-artifacts/npm-audit-root.json
+            migration-artifacts/npm-audit-whatsapp.json
           if-no-files-found: ignore
           retention-days: 7
