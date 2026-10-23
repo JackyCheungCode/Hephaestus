@@ -72,3 +72,24 @@ Standalone WhatsApp direct findings include `concurrently` (critical; 9.2.5), `u
 3. Resolve exact patched versions for root MCP client/server, `mailparser`, `nodemailer`, and `vite` from npm's advisory output and lockfiles; upgrade paired MCP client/server packages together.
 4. Keep `vitest` 5, `whatsapp-web.js`, and `xlsx` out of the first patch batch pending major-upgrade or replacement/mitigation plans. Do not use blanket `npm audit fix --force`.
 5. Re-run installs, builds, the full suite, isolated CLI warm test, audit and SBOM generation. Compare counts and resolved package versions before claiming remediation.
+
+
+## Advisory-level review of run #99 reports
+
+The downloaded run #99 JSON confirms the principal remediations should be separated by risk class:
+
+### Candidate targeted fixes (must be verified in a new isolated CI run)
+
+- `concurrently` is direct in both install scopes at the vulnerable 9.2.4 range; npm identifies 9.2.5 as a non-major fix. It also resolves the associated critical `shell-quote` chain. Upgrade the two manifests/lockfiles independently and validate CLI process shutdown, quoting, and all tests.
+- WhatsApp `undici` is pinned at 6.28.0 and the advisory range is <=6.28.0; npm identifies 6.29.1 as a compatible fix. Upgrade only that dependency first, then test HTTP/WebSocket integration and the standalone plugin suite.
+- Root `@modelcontextprotocol/client` and `@modelcontextprotocol/server` both have reported vulnerable 2.0.0–2.2.0 ranges; npm identifies 2.3.1 as a non-major fix. Upgrade the pair together, then run MCP protocol/integration tests.
+- Other transitive findings with `fixAvailable: true` (including `axios`, `brace-expansion`, `browserslist`, `fast-uri`, `follow-redirects`, `js-yaml`, and `source-map-js`) require checking the full dependency path and lockfile diff before selecting targeted overrides.
+
+### Explicit hold / compatibility review
+
+- `whatsapp-web.js` is reported high and npm's suggested fix is 1.34.2 marked as a major change; the captured audit also reports a vulnerable installed range 1.34.4–1.34.7. Do not accept the suggested version blindly; verify advisory metadata, release chronology, package provenance, and WhatsApp session/browser tests.
+- WhatsApp `vitest`/`tinypool` critical findings point to `vitest@5.0.5`, a major upgrade from the installed 3.2.6. Keep as a separate change with test-runner compatibility validation.
+- Root `xlsx` has no npm-provided fix in this report. Inspect whether untrusted spreadsheet data reaches it, then choose a maintained replacement or documented mitigation; do not mark fixed.
+- Root `dompurify` critical finding has a fix available, but the exact resolved package and sanitization usage must be verified before patching.
+
+These are remediation candidates, not completed fixes. No package manifests or lockfiles were changed by this advisory review. Keep the run #99 audit artifact as the baseline and require a new post-change audit artifact before closing any item.
