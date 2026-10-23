@@ -46,15 +46,23 @@ jobs:
           node --version
           npm --version
 
-      - name: Install locked dependencies
+      - name: Install root workspace dependencies
+        id: install-root
         working-directory: goodjob-source
         run: npm ci --ignore-scripts=false
 
-      - name: Build all upstream workspaces
+      - name: Install standalone WhatsApp plugin dependencies
+        id: install-whatsapp
+        working-directory: goodjob-source/whatsapp-plugin
+        run: npm ci --ignore-scripts=false
+
+      - name: Build all upstream packages
+        id: build
         working-directory: goodjob-source
         run: npm run build
 
-      - name: Run upstream test suite
+      - name: Run upstream test suite even if build fails
+        if: always() && steps.install-root.conclusion == 'success' && steps.install-whatsapp.conclusion == 'success'
         working-directory: goodjob-source
         run: npm test
 
