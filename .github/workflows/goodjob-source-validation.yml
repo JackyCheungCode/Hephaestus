@@ -89,6 +89,34 @@ jobs:
           npm sbom --sbom-format=cyclonedx --omit=optional > ../migration-artifacts/sbom-root.cdx.json || echo "Root SBOM generation failed; inspect job logs."
           npm --prefix whatsapp-plugin sbom --sbom-format=cyclonedx --omit=optional > ../migration-artifacts/sbom-whatsapp.cdx.json || echo "WhatsApp SBOM generation failed; inspect job logs."
 
+      - name: Validate dependency audit and SBOM artifacts
+        if: always() && steps.install-root.conclusion == 'success' && steps.install-whatsapp.conclusion == 'success'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("migration-artifacts")
+          required = [
+              "npm-audit-root.json",
+              "npm-audit-whatsapp.json",
+              "sbom-root.cdx.json",
+              "sbom-whatsapp.cdx.json",
+          ]
+          missing = [name for name in required if not (root / name).is_file() or (root / name).stat().st_size == 0]
+          if missing:
+              raise SystemExit(f"Required dependency evidence missing or empty: {', '.join(missing)}")
+          for name in required:
+              path = root / name
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+              except Exception as exc:
+                  raise SystemExit(f"{name} is not valid JSON: {exc}")
+              if name.startswith("sbom-") and not isinstance(data.get("components"), list):
+                  raise SystemExit(f"{name} is missing CycloneDX components array")
+              print(f"Validated {name}: {path.stat().st_size} bytes")
+          PY
+
       - name: Build all upstream packages
         id: build
         working-directory: goodjob-source
