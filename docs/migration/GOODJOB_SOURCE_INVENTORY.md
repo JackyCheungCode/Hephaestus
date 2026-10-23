@@ -1,6 +1,6 @@
 # GoodJob source inventory — schema and runtime
 
-This inventory is based on upstream `huangguojia/GoodJob` `master` as inspected on 2026-10-23. Re-run against a pinned upstream commit before implementation because `master` can change.
+This inventory was initially measured from upstream `huangguojia/GoodJob` `master` as inspected on 2026-10-23. The migration branch now pins `30928c297646597fd7d52ee15ca93236bf0bd2e5` for reproducible CI validation. The lexical schema counts below should be re-generated against that exact pinned revision before they are treated as a migration input.
 
 ## Schema measurements
 
@@ -29,7 +29,7 @@ The schema is not a safe one-shot find-and-replace conversion. It includes many 
 
 ## Additional code-level findings (important for implementation order)
 
-- The upstream source revision surfaced by GitHub search is `30928c297646597fd7d52ee15ca93236bf0bd2e5`. Pin this SHA for repeatable local validation; the branch name `master` alone is not reproducible.
+- The upstream source revision used by the isolated CI workflow is `30928c297646597fd7d52ee15ca93236bf0bd2e5`; the workflow checks out this exact SHA and runs `npm ci`, `npm run build`, and `npm test`. The workflow has been committed but its run result must be checked separately; no pass is claimed yet.
 - `backend/src/prospect-bullmq-backend.ts` defines the prospect execution queue `goodjob-prospect-execution-v1` and dead-letter queue `goodjob-prospect-dead-letter-v1`, validates Redis URLs and configures retry/connection behavior. Queue migration must preserve both normal and dead-letter behavior.
 - `integration-worker/src/queue.ts` defines separate control, tool-call and event workers, including OAuth prepare/complete, credential refresh/revoke, webhook sync, health checks, disconnect/terminate, and webhook-event processing. A single generic queue would risk losing operation-specific concurrency/retry semantics.
 - The README explicitly documents a **single-backend-instance production constraint**: some candidate-cleaning, global provider rate-limit and worker-lifecycle paths are not yet cross-process atomic. The migration must not scale API/worker replicas horizontally until these paths are redesigned and race-tested.
@@ -51,7 +51,7 @@ The schema is not a safe one-shot find-and-replace conversion. It includes many 
 
 ## Next implementation artifacts
 
-- [ ] Pin upstream GoodJob commit SHA and store inventory evidence.
+- [x] Pin upstream GoodJob commit SHA and add a non-deploying validation workflow (execution result still pending).
 - [ ] Build a normalized schema inventory (table/column/type/nullability/default/PK/unique/FK/check/index/generated expression).
 - [ ] Inspect backend repository/store code and every direct SQL dialect assumption.
 - [ ] Create versioned Supabase migrations only after schema inventory is complete.
