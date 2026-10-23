@@ -2,7 +2,7 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).parents[1] / "scripts" / "migration" / "inventory_mysql_schema.py"
+SCRIPT = Path(__file__).parents[2] / "scripts" / "migration" / "inventory_mysql_schema.py"
 SPEC = importlib.util.spec_from_file_location("inventory_mysql_schema", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
