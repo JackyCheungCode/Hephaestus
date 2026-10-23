@@ -25,6 +25,18 @@ class MysqlDialectAuditTests(unittest.TestCase):
             self.assertIn(("mysql_placeholder", 2), found)
             self.assertIn(("for_update_lock", 3), found)
 
+    def test_ignores_prose_and_json_false_positives(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "README.md").write_text(
+                "URL https://example.test/page?type=5 and JSON are documentation, not SQL.",
+                encoding="utf-8",
+            )
+            (root / "settings.json").write_text('{"format": "json", "path": "/x?y"}', encoding="utf-8")
+            result = inventory(root)
+            self.assertEqual(result["files_scanned"], 0)
+            self.assertEqual(result["finding_count"], 0)
+
     def test_ignores_generated_dependency_directories(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -38,3 +50,4 @@ class MysqlDialectAuditTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
