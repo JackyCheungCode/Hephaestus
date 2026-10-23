@@ -1,0 +1,70 @@
+name: Validate pinned GoodJob upstream
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/migration/**"
+      - ".github/workflows/goodjob-source-validation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: goodjob-source-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-upstream:
+    name: Build and test upstream at pinned SHA
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out Hephaestus migration branch
+        uses: actions/checkout@v4
+
+      - name: Check out pinned GoodJob source
+        uses: actions/checkout@v4
+        with:
+          repository: huangguojia/GoodJob
+          ref: 30928c297646597fd7d52ee15ca93236bf0bd2e5
+          path: goodjob-source
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: goodjob-source/package-lock.json
+
+      - name: Record source revision and toolchain
+        working-directory: goodjob-source
+        run: |
+          git rev-parse HEAD
+          node --version
+          npm --version
+
+      - name: Install locked dependencies
+        working-directory: goodjob-source
+        run: npm ci --ignore-scripts=false
+
+      - name: Build all upstream workspaces
+        working-directory: goodjob-source
+        run: npm run build
+
+      - name: Run upstream test suite
+        working-directory: goodjob-source
+        run: npm test
+
+      - name: Upload test/build logs if produced
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goodjob-validation-metadata
+          path: |
+            goodjob-source/npm-debug.log
+            goodjob-source/**/npm-debug.log
+          if-no-files-found: ignore
+          retention-days: 7
