@@ -1,0 +1,12 @@
+name = "hephaestus"
+main = "cloudflare/worker.js"
+compatibility_date = "2026-10-23"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hephaestus-leads"
+database_id = "33dc6c45-3656-4140-83b4-c06341186d93"
+
+[observability]
+enabled = true
