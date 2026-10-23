@@ -9,7 +9,7 @@
 - [x] Disable concurrency cancellation for the validation workflow so a new documentation commit does not automatically cancel an expensive build/test run.
 - [x] Confirm corrected workflow run #16: the schema inventory extractor and its two unit tests passed; root and standalone WhatsApp dependency installation is in progress.
 - [x] Record workflow #16 outcome: build was cancelled, full test suite failed, and isolated `whatsapp-plugin/tests/cli-warm.test.ts` retry failed. The warm test expected one CLI start but observed two.
-- [ ] Re-run validation after the dialect-audit workflow changes; confirm build, full suite, and isolated retry. Do not claim test-suite pass until it finishes.
+- [x] Re-run validation after the dialect-audit workflow changes (run #25, run ID `39919928750`): root and WhatsApp dependency installs passed; schema inventory step passed; **all upstream packages built successfully**. The full suite still failed: 359 passed, 1 failed, 9 skipped (369 total). `whatsapp-plugin/tests/cli-warm.test.ts:210` expected one CLI process start but observed two; isolated retry failed identically (5 passed, 1 failed). Artifact `goodjob-validation-metadata` was uploaded (artifact ID `12486104218`). The dialect audit JSON was requested as an artifact, but confirm its presence/content before relying on it. Do not alter the upstream expectation merely to green the workflow.
 - [ ] Record upstream license files and dependency/license report.
 - [ ] Run `npm run test:e2e` separately after confirming browser/system prerequisites.
 - [ ] Record all failures without masking or changing expected behavior.
