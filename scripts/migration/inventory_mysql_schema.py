@@ -46,7 +46,8 @@ def _scan(sql: str, opening: int) -> int:
                 i += 2
                 continue
             if ch == quote:
-                if quote == BT and nxt == BT:
+                # SQL permits doubled quote delimiters inside quoted values/identifiers.
+                if nxt == quote:
                     i += 2
                     continue
                 quote = None
@@ -104,7 +105,8 @@ def _split_top_level(body: str) -> list[str]:
                 i += 2
                 continue
             if ch == quote:
-                if quote == BT and nxt == BT:
+                # SQL permits doubled quote delimiters inside quoted values/identifiers.
+                if nxt == quote:
                     i += 2
                     continue
                 quote = None
