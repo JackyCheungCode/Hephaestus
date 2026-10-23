@@ -40,3 +40,10 @@ This fits both the assertion shape (two `start` entries in a per-test log) and t
 ## Current status and limitation
 
 The source inspection materially narrows the likely cause, but no upstream code fix has been applied or tested. The validation workflow checks out an external source pinned to a fixed SHA; Hephaestus currently stores migration tooling and evidence rather than a writable copy of that implementation. No assertion was weakened and no production resources were touched.
+
+
+## Candidate fix staged in migration validation workflow
+
+A fail-closed patch applicator was added at `scripts/migration/apply_cli_warm_lifecycle_patch.py` and wired into `.github/workflows/goodjob-source-validation.yml`. In the CI temporary checkout only, it adds a disposed flag, prevents `ensureWarm()` from starting after disposal, and checks the flag after `ensureWorkspace()` resolves but before spawning a child. The applicator requires each source snippet to match exactly once and fails rather than patching an unexpected upstream revision.
+
+This is a candidate fix, not yet a verified fix: the workflow must pass the patch step, build, the isolated warm test, and the full suite. The patch does not modify the upstream repository or production resources. The existing test assertion remains unchanged. A dedicated deterministic teardown-race test is still desirable even if the existing test becomes green.
