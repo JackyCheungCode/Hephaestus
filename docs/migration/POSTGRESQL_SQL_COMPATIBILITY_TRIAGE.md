@@ -41,3 +41,10 @@ Do not mark a finding complete until the register records: (1) source file and l
 1. Download and review the next completed validation artifact, including both npm audit JSON files if present.
 2. Turn P0 source locations into a query-by-query disposition register, beginning with approval/lease/worker locking and upsert uniqueness.
 3. Keep the PostgreSQL schema, RLS, concurrency and import gates unchecked until disposable-database tests exist.
+
+
+## Follow-up evidence — run #99 (2026-10-23)
+
+The completed pinned-source validation run #99 (`39926659632`) regenerated `mysql-dialect-audit.json` and `mysql-schema-inventory.json` in artifact `12489673430`. The static scan still reports 549 files and 5,095 raw pattern matches: 56 MySQL driver imports, 59 `ON DUPLICATE KEY UPDATE`, 26 `INSERT IGNORE`, 150 `NOW(3)`, 67 `information_schema`, 70 `FOR UPDATE`, 2 `JSON_ARRAY`, 55 `ENGINE=InnoDB`, 182 `DATETIME(3)`, 287 JSON-type matches, and 4,091 placeholder matches. These are static matches—not distinct executable SQL statements—and are not evidence that PostgreSQL compatibility is complete.
+
+The generated schema inventory reports 132 tables, 1,908 columns, 132 primary keys, 110 unique constraints, 116 indexes, 109 foreign keys, 6 recognized checks, and 8 generated columns. Prioritize runtime query disposition for transactional locks/upserts, uniqueness and conflict behavior, timestamp precision/time zones, metadata introspection, and JSON operations. Keep all PostgreSQL/Supabase acceptance gates unchecked until actual disposable-PostgreSQL integration tests validate schema, migrations, RLS, concurrency, imports and rollback.
