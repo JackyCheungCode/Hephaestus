@@ -27,6 +27,15 @@ The schema is not a safe one-shot find-and-replace conversion. It includes many 
 - WhatsApp package declares GPL-3.0-only and depends on Baileys 7.0.0-rc13, Express 5, Socket.IO 4, mysql2, pg and PGlite. Its README describes PGlite for local use and MySQL 8 shared with the GoodJob CRM in production. This is a real database/runtime boundary to resolve, not merely a frontend integration.
 - Target Hephaestus has `wrangler.toml` for Worker `hephaestus`, `cloudflare/worker.js` entrypoint and D1 binding `DB`. The existing GitHub Actions deployment workflow explicitly deploys from `main`; do not change it to deploy this migration branch.
 
+## Additional code-level findings (important for implementation order)
+
+- The upstream source revision surfaced by GitHub search is `30928c297646597fd7d52ee15ca93236bf0bd2e5`. Pin this SHA for repeatable local validation; the branch name `master` alone is not reproducible.
+- `backend/src/prospect-bullmq-backend.ts` defines the prospect execution queue `goodjob-prospect-execution-v1` and dead-letter queue `goodjob-prospect-dead-letter-v1`, validates Redis URLs and configures retry/connection behavior. Queue migration must preserve both normal and dead-letter behavior.
+- `integration-worker/src/queue.ts` defines separate control, tool-call and event workers, including OAuth prepare/complete, credential refresh/revoke, webhook sync, health checks, disconnect/terminate, and webhook-event processing. A single generic queue would risk losing operation-specific concurrency/retry semantics.
+- The README explicitly documents a **single-backend-instance production constraint**: some candidate-cleaning, global provider rate-limit and worker-lifecycle paths are not yet cross-process atomic. The migration must not scale API/worker replicas horizontally until these paths are redesigned and race-tested.
+- WhatsApp `src/server/db/database.ts` already contains a database abstraction for PGlite, PostgreSQL (`pg`) and MySQL (`mysql2`), plus transaction wrappers. That makes a PostgreSQL path plausible, but the production README still documents MySQL 8 as the shared CRM database. Existing SQL compatibility, migrations, query parameter conventions, auth/session encryption and transaction semantics still need a full audit before switching production.
+- WhatsApp production documentation says its database/session master key must be backed up together and requires a fixed `SESSION_MASTER_KEY`; it describes the plugin as single-tenant, single-instance and privately deployed behind the CRM auth gateway. These constraints must remain explicit until a tested replacement design exists.
+
 ## PostgreSQL port decisions required before writing migrations
 
 1. **Identity/auth:** GoodJob `users` currently stores email/password hash, role, team_id and auth_version. Decide whether existing authentication remains app-managed initially or is migrated to Supabase Auth. A naïve Auth swap could break password/session semantics and integrations.
