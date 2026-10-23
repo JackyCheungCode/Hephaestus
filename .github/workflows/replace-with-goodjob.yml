@@ -1,0 +1,55 @@
+name: Replace Hephaestus with GoodJob
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  replace-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out destination repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check out upstream GoodJob
+        uses: actions/checkout@v4
+        with:
+          repository: huangguojia/GoodJob
+          ref: master
+          path: .goodjob-upstream
+          fetch-depth: 1
+
+      - name: Replace repository files with GoodJob source
+        shell: bash
+        run: |
+          rsync -a --delete --exclude='/.git' .goodjob-upstream/ ./
+          rm -rf .goodjob-upstream
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Replace Hephaestus app with upstream GoodJob CRM"
+            git push origin HEAD:main
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build GoodJob
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
