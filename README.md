@@ -40,9 +40,7 @@ Worker 名称为 hephaestus，D1 数据库为 hephaestus-leads。
     npx wrangler secret put APP_ENCRYPTION_KEY
     npm run deploy:worker
 
-线上入口：https://hephaestus.xg-y.workers.dev
-
-访问保护：线上 Worker 使用 HTTP Basic Auth，用户名为 admin。部署后需输入单独提供的访问密码；所有 API 路由同样受保护。更换密码可运行 npx wrangler secret put APP_PASSWORD。
+Cloudflare Worker 已创建并部署，D1 数据库已绑定。为避免尚未设置访问密码时暴露 API 配置页面，workers.dev 公开入口暂时关闭。先在 Cloudflare Dashboard 的 Workers & Pages → hephaestus → Settings → Variables and Secrets 中新增 Secret：APP_PASSWORD（选择高强度密码），然后告知我已设置，我会重新启用公开入口。访问用户名固定为 admin；所有 API 路由同样受保护。也可在自己的终端运行 npx wrangler secret put APP_PASSWORD。
 
 访问保护：线上 Worker 使用 HTTP Basic Auth，用户名为 admin。部署后需输入单独提供的访问密码；所有 API 路由同样受保护。更换密码可运行 `npx wrangler secret put APP_PASSWORD`。
 
