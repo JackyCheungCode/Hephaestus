@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model Project {
+  id String @id @default(cuid())
+  name String
+  product String
+  industry String?
+  country String @default("United States")
+  language String @default("English")
+  customerTypes String @default("importer,wholesaler,distributor,brand,retailer")
+  excludeWords String @default("")
+  keywords SearchKeyword[]
+  jobs SearchJob[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model SearchKeyword {
+  id String @id @default(cuid())
+  projectId String
+  keyword String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([projectId])
+}
+model ProviderConfig {
+  id String @id @default(cuid())
+  provider String @unique
+  enabled Boolean @default(false)
+  encryptedKey String?
+  baseUrl String?
+  priority Int @default(10)
+  weight Float @default(1)
+  resultLimit Int @default(10)
+  timeoutMs Int @default(12000)
+  retries Int @default(1)
+  costPerRequest Float @default(0)
+  quotaMonthly Int @default(1000)
+  usedMonthly Int @default(0)
+  proxyUrl String?
+  notes String?
+  updatedAt DateTime @updatedAt
+}
+model SearchJob {
+  id String @id @default(cuid())
+  projectId String?
+  query String
+  country String
+  language String
+  status String @default("queued")
+  resultCount Int @default(0)
+  providerRuns ProviderRun[]
+  leads Lead[]
+  estimatedCost Float @default(0)
+  actualCost Float @default(0)
+  error String?
+  createdAt DateTime @default(now())
+  finishedAt DateTime?
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+}
+model ProviderRun {
+  id String @id @default(cuid())
+  jobId String
+  provider String
+  status String
+  durationMs Int @default(0)
+  resultCount Int @default(0)
+  estimatedCost Float @default(0)
+  error String?
+  job SearchJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+model RawResult {
+  id String @id @default(cuid())
+  url String @unique
+  domain String
+  title String
+  snippet String @default("")
+  provider String
+  rank Int @default(0)
+  rawJson String
+  createdAt DateTime @default(now())
+}
+model Lead {
+  id String @id @default(cuid())
+  jobId String?
+  url String @unique
+  domain String
+  companyName String?
+  country String?
+  industryDescription String?
+  score Int @default(0)
+  scoreReasons String @default("[]")
+  status String @default("new")
+  notes String @default("")
+  tags String @default("[]")
+  emails String @default("[]")
+  phones String @default("[]")
+  socials String @default("[]")
+  contactUrl String?
+  snippet String @default("")
+  providers String @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  job SearchJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+}
+model AppSetting {
+  key String @id
+  value String
+  updatedAt DateTime @updatedAt
+}
+model CostLog {
+  id String @id @default(cuid())
+  provider String
+  jobId String?
+  amount Float
+  detail String?
+  createdAt DateTime @default(now())
+}
+model ExportJob {
+  id String @id @default(cuid())
+  format String
+  status String @default("done")
+  rowCount Int @default(0)
+  createdAt DateTime @default(now())
+}
