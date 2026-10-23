@@ -69,9 +69,15 @@ jobs:
         run: npm run build
 
       - name: Run upstream test suite even if build fails
+        id: test
         if: always() && steps.install-root.conclusion == 'success' && steps.install-whatsapp.conclusion == 'success'
         working-directory: goodjob-source
         run: npm test
+
+      - name: Re-run failed WhatsApp CLI warm test in isolation
+        if: always() && steps.install-whatsapp.conclusion == 'success' && steps.test.conclusion == 'failure'
+        working-directory: goodjob-source/whatsapp-plugin
+        run: npm test -- tests/cli-warm.test.ts
 
       - name: Upload test/build logs if produced
         if: always()
