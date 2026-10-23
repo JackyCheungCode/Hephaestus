@@ -2,10 +2,7 @@ services:
   hephaestus:
     build: .
     ports:
-      - "3000:3000"
-    env_file: .env
+      - "8787:8787"
     volumes:
-      - hephaestus_data:/app/prisma
+      - ./.wrangler:/app/.wrangler
     restart: unless-stopped
-volumes:
-  hephaestus_data:
