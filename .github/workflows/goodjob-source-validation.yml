@@ -43,6 +43,9 @@ jobs:
           ref: 30928c297646597fd7d52ee15ca93236bf0bd2e5
           path: goodjob-source
 
+      - name: Apply reviewed CLI warm lifecycle guard in temporary checkout
+        run: python scripts/migration/apply_cli_warm_lifecycle_patch.py
+
       - name: Inventory pinned MySQL schema
         run: |
           python scripts/migration/inventory_mysql_schema.py goodjob-source/backend/schema.mysql.sql --output migration-artifacts/mysql-schema-inventory.json
