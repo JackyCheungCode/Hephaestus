@@ -1,8 +1,0 @@
-services:
-  hephaestus:
-    build: .
-    ports:
-      - "8787:8787"
-    volumes:
-      - ./.wrangler:/app/.wrangler
-    restart: unless-stopped

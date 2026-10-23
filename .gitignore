@@ -1,8 +1,0 @@
-node_modules/
-.next/
-.wrangler/
-.dev.vars
-.env
-.env.local
-*.db
-.DS_Store
