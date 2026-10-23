@@ -132,7 +132,7 @@ jobs:
         run: npm test
 
       - name: Re-run failed WhatsApp CLI warm test in isolation
-        if: always() && steps.install-whatsapp.conclusion == 'success' && steps.test.conclusion == 'failure'
+        if: always() && steps.install-whatsapp.conclusion == 'success'
         working-directory: goodjob-source/whatsapp-plugin
         run: npm test -- tests/cli-warm.test.ts
 
