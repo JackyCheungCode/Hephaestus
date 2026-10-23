@@ -50,3 +50,10 @@ Run #74 (`39924298660`, [workflow](https://github.com/JackyCheungCode/Hephaestus
 ## Current validation status
 
 Run #58: both dependency installs and both audit steps succeeded; all upstream package builds succeeded. The complete suite failed with 359 passed, 1 failed, 9 skipped; the isolated retry reproduced the CLI warm test failure at `whatsapp-plugin/tests/cli-warm.test.ts:210` (expected one process start, observed two). Dependency triage is now evidence-backed but **not complete**. No dependency upgrades have been applied by this register.
+
+
+## Follow-up validation — run #99 (2026-10-23)
+
+Run #99 (`39926659632`, [workflow](https://github.com/JackyCheungCode/Hephaestus/actions/runs/39926659632), artifact `12489673430`) completed successfully against pinned source `huangguojia/GoodJob@30928c297646597fd7d52ee15ca93236bf0bd2e5`. Both dependency installs, audit reports, CycloneDX SBOM generation/validation, all package builds, and the full WhatsApp plugin test suite succeeded. The full suite reported **360 passed, 9 skipped** across 32 test files (30 passed, 2 skipped). The isolated `tests/cli-warm.test.ts` rerun also passed **6/6**. The temporary-checkout lifecycle guard and isolated-test workflow change therefore pass this run; this is not a production deployment and does not mean the upstream source or dependency vulnerabilities are fully remediated.
+
+The run regenerated and retained `npm-audit-root.json`, `npm-audit-whatsapp.json`, `sbom-root.cdx.json`, `sbom-whatsapp.cdx.json`, `mysql-schema-inventory.json`, and `mysql-dialect-audit.json` in artifact `goodjob-validation-metadata` (artifact expires 2026-10-30). The audit counts remain root: 4 critical, 25 high, 7 moderate (36 findings); standalone WhatsApp: 5 critical, 7 high, 6 moderate (18 findings). These scopes overlap. **No dependency remediation was applied by run #99.** Continue by reviewing exact advisories and applying narrowly scoped upgrades in a dedicated migration-branch commit, then repeat build/full/isolated tests and regenerate reports. PostgreSQL compatibility and production readiness remain separate open gates.
