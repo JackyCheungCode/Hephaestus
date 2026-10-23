@@ -6,7 +6,7 @@ Pinned source: `huangguojia/GoodJob@30928c297646597fd7d52ee15ca93236bf0bd2e5`
 
 This is a **triage queue**, not a conversion plan or estimate. It is derived from the run #38 static audit artifact (`549` files, `5,095` text matches). Static matching does not prove that a line executes SQL, and a filename containing `mysql` does not automatically mean every query is incompatible. Each query must be reviewed with its transaction boundary, schema constraint, and caller.
 
-The existing artifact was generated before the later workflow change that captures npm audit JSON. Run #56 is pending and should be used to verify the new workflow and refresh artifacts.
+The dialect audit remains a static, first-pass scan and must not be treated as a migration estimate. Run #74 (2026-10-23; [workflow details](https://github.com/JackyCheungCode/Hephaestus/actions/runs/39924298660)) confirmed the current workflow also captures both npm audit JSON reports and both CycloneDX SBOMs. The source revision remains pinned; SQL conversion and PostgreSQL runtime behavior have not been implemented or verified by this scan.
 
 ## Recommended review order
 
