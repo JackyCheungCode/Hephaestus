@@ -16,7 +16,8 @@ permissions:
 
 concurrency:
   group: goodjob-source-validation-${{ github.ref }}
-  cancel-in-progress: true
+  # Do not cancel an expensive baseline run merely because a documentation commit lands.
+  cancel-in-progress: false
 
 jobs:
   validate-upstream:
