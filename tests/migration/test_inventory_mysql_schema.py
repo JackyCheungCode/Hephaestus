@@ -14,6 +14,7 @@ class InventoryMysqlSchemaTests(unittest.TestCase):
         sql = """
         CREATE TABLE example (
           id VARCHAR(64) NOT NULL,
+          note VARCHAR(100) DEFAULT 'it''s, still one column',
           payload JSON DEFAULT (JSON_OBJECT('x', 'a,b')),
           derived VARCHAR(100) GENERATED ALWAYS AS (CONCAT(id, ',', 'x')) STORED,
           PRIMARY KEY (id),
@@ -24,7 +25,7 @@ class InventoryMysqlSchemaTests(unittest.TestCase):
         """
         result = MODULE.inventory(sql)
         self.assertEqual(result["counts"]["tables"], 1)
-        self.assertEqual(result["counts"]["columns"], 3)
+        self.assertEqual(result["counts"]["columns"], 4)
         self.assertEqual(result["counts"]["primary_keys"], 1)
         self.assertEqual(result["counts"]["unique_constraints"], 1)
         self.assertEqual(result["counts"]["foreign_keys"], 1)
