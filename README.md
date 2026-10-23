@@ -42,6 +42,8 @@ Worker 名称为 hephaestus，D1 数据库为 hephaestus-leads。
 
 线上入口：https://hephaestus.xg-y.workers.dev
 
+访问保护：线上 Worker 使用 HTTP Basic Auth，用户名为 admin。部署后需输入单独提供的访问密码；所有 API 路由同样受保护。更换密码可运行 `npx wrangler secret put APP_PASSWORD`。
+
 生产环境请使用自己的 Cloudflare 账号和密钥管理流程。不要把 .dev.vars、.env 或 API Key 提交到 Git。
 
 ## Provider 配置
