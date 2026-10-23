@@ -81,6 +81,14 @@ jobs:
           npm audit --json > ../migration-artifacts/npm-audit-root.json || echo "Root npm audit reported findings; JSON report retained."
           npm --prefix whatsapp-plugin audit --json > ../migration-artifacts/npm-audit-whatsapp.json || echo "WhatsApp npm audit reported findings; JSON report retained."
 
+      - name: Capture dependency SBOM reports
+        if: always() && steps.install-root.conclusion == 'success' && steps.install-whatsapp.conclusion == 'success'
+        working-directory: goodjob-source
+        run: |
+          mkdir -p ../migration-artifacts
+          npm sbom --sbom-format=cyclonedx --omit=optional > ../migration-artifacts/sbom-root.cdx.json || echo "Root SBOM generation failed; inspect job logs."
+          npm --prefix whatsapp-plugin sbom --sbom-format=cyclonedx --omit=optional > ../migration-artifacts/sbom-whatsapp.cdx.json || echo "WhatsApp SBOM generation failed; inspect job logs."
+
       - name: Build all upstream packages
         id: build
         working-directory: goodjob-source
@@ -109,5 +117,7 @@ jobs:
             migration-artifacts/mysql-dialect-audit.json
             migration-artifacts/npm-audit-root.json
             migration-artifacts/npm-audit-whatsapp.json
+            migration-artifacts/sbom-root.cdx.json
+            migration-artifacts/sbom-whatsapp.cdx.json
           if-no-files-found: ignore
           retention-days: 7
