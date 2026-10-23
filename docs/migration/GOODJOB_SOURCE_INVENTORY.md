@@ -1,6 +1,6 @@
 # GoodJob source inventory — schema and runtime
 
-This inventory was initially measured from upstream `huangguojia/GoodJob` `master` as inspected on 2026-10-23. The migration branch now pins `30928c297646597fd7d52ee15ca93236bf0bd2e5` for reproducible CI validation. The lexical schema counts below should be re-generated against that exact pinned revision before they are treated as a migration input.
+The schema measurements below were re-run against upstream `huangguojia/GoodJob` at pinned revision `30928c297646597fd7d52ee15ca93236bf0bd2e5` on 2026-10-23. The schema file blob SHA is `e833e94fcdcd765d930d6439d66302374b3ebe18`. Counts are lexical inventory aids, not a normalized DDL model.
 
 ## Schema measurements
 
@@ -9,14 +9,14 @@ The fetched `backend/schema.mysql.sql` is 121,675 characters and declares:
 | Construct | Count |
 |---|---:|
 | `CREATE TABLE` | 132 |
-| MySQL `KEY` / `INDEX` / `UNIQUE KEY` declarations | 219 |
+| Lines beginning with `KEY` / `INDEX` / `UNIQUE KEY` | 217 |
 | Foreign-key declarations | 109 |
 | Check constraints | 99 |
-| Stored generated columns | 8 |
+| Lines mentioning `GENERATED ALWAYS` or `STORED` | 13 |
 | JSON column/type references | 76 |
 | `DATETIME(3)` occurrences | 178 |
 
-The schema is not a safe one-shot find-and-replace conversion. It includes many tenant/team-scoped CRM, prospecting, integration and operational records, generated tenant columns, and substantial relational integrity. Table/index counts above are lexical counts, not a substitute for a parsed DDL model; index declarations embedded inside a table and table-level constraints need normalized extraction before generating PostgreSQL DDL.
+The schema is not a safe one-shot find-and-replace conversion. It includes many tenant/team-scoped CRM, prospecting, integration and operational records, generated tenant columns, and substantial relational integrity. The file has 3,260 lines and 132 table starts. Counts are produced by simple regex/line matching: the 217 index lines and 13 generated/STORED lines are not guaranteed to equal semantic index/column counts. A normalized DDL parser/model is still required before generating PostgreSQL DDL.
 
 ## Runtime/package evidence
 
