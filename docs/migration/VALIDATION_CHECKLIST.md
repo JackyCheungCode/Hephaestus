@@ -3,7 +3,9 @@
 ## Source baseline
 - [x] Pin upstream GoodJob revision: `30928c297646597fd7d52ee15ca93236bf0bd2e5`.
 - [x] Add isolated GitHub Actions workflow at `.github/workflows/goodjob-source-validation.yml`. It checks out the pinned upstream source, records toolchain versions, runs `npm ci`, `npm run build`, and `npm test`.
-- [ ] Run the workflow and record the actual result/logs; adding the workflow is not evidence that build/tests passed.
+- [x] Run the workflow against the pinned revision. First run: root `npm ci` succeeded (638 packages added; audit reported 36 vulnerabilities: 7 moderate, 25 high, 4 critical); build failed in the separately-installed WhatsApp frontend because its dependencies were not installed by root workspaces. This exposed a workflow setup issue, not yet a confirmed upstream source defect.
+- [x] Correct the workflow to install `whatsapp-plugin/package-lock.json` separately and to run tests even when the build step fails (provided both installs succeed).
+- [ ] Confirm the corrected workflow run result; do not claim build/test pass until it finishes.
 - [ ] Record upstream license files and dependency/license report.
 - [ ] Run `npm run test:e2e` separately after confirming browser/system prerequisites.
 - [ ] Record all failures without masking or changing expected behavior.
