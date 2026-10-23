@@ -12,6 +12,28 @@ This document records implementation risks found in source inspection. It is not
 - `backend/src/iam/iam-business-tenant-migration.ts` queries `information_schema.columns` and `DATABASE()`, so schema introspection/migration utilities also require a PostgreSQL implementation.
 - The WhatsApp plugin config parser accepts `pglite`, `postgres`, and `mysql`, and a PostgreSQL adapter exists, but its production deployment guide explicitly requires `DATABASE_CLIENT=mysql` and the same MySQL 8 database as the CRM. The plugin's production runtime rejects PostgreSQL. Treat PostgreSQL support as local/dev or migration tooling, not a production-ready Supabase adapter.
 
+## Prioritized implementation gates
+
+| Priority | Confirmed issue | Required engineering action | Exit evidence |
+|---|---|---|---|
+| P0 | WhatsApp plugin production runtime requires MySQL; its PostgreSQL adapter is not a supported production configuration | Choose and document either a real PostgreSQL port or an isolated service/database contract before designing a shared Supabase schema | Architecture decision record plus production-like adapter tests |
+| P0 | Backend domain modules directly depend on `mysql2/promise` types and pool behavior | Define the minimum store/transaction interface from actual call sites; inventory every direct driver import before changing runtime wiring | Import inventory and contract tests covering transactions, errors, connection lifecycle and row types |
+| P0 | Task execution, approval freeze, webhook dedupe and lease recovery depend on transaction/locking semantics | Map each critical flow and its invariants before translating SQL; add concurrent PostgreSQL tests for duplicate delivery, retries, lease expiry and ambiguous provider outcomes | Repeatable concurrency tests against disposable PostgreSQL |
+| P1 | MySQL upserts use `ON DUPLICATE KEY UPDATE` and legacy `VALUES(column)` semantics | Identify the exact unique constraint and intended behavior for every statement; use explicit `ON CONFLICT` targets only after verifying constraints | Per-query disposition, matching unique constraint, regression test |
+| P1 | Schema introspection uses `DATABASE()` and MySQL `information_schema` assumptions | Replace with PostgreSQL catalog queries or portable migration metadata; do not mechanically rename catalog fields | Introspection tests on a fresh PostgreSQL database |
+| P1 | `DATETIME(3)`, JSON, unsigned numeric declarations, generated columns and collation behavior may not preserve semantics directly | Complete column-level mapping and data round-trip tests before producing target DDL | Reviewed mapping register, boundary-value tests and count/invariant reconciliation |
+| P1 | Supabase RLS and API exposure are not yet modeled against actual authorization rules | Derive policies from tenant/team checks in application code; test each exposed table with anonymous, authenticated and service roles | Automated positive and cross-tenant negative RLS tests |
+| P2 | Install-time npm audit reported 36 vulnerabilities across the root dependency install; no triage has been recorded | Capture machine-readable audit reports for root and WhatsApp lockfiles separately; classify direct/transitive dependency, runtime reachability and fix availability | Reviewed SBOM/license report and vulnerability disposition; no blind force-upgrades |
+
+These priorities describe ordering, not proof that every item has the same exploitability or implementation cost. The scanner is a lead generator; each source finding must be manually classified as executable runtime SQL, test-only, migration code, dead code or false positive before estimating effort.
+
+## Immediate next actions
+
+1. Obtain a non-cancelled CI run for the current scanner and inspect its artifact before quoting any match counts.
+2. Extract the complete source table/column/index/constraint inventory and reconcile it with the mapping register.
+3. Build the source SQL disposition list from real runtime call sites, beginning with transaction-critical code and upserts.
+4. Do not create executable Supabase migrations until schema mapping and authorization/RLS review are approved.
+
 ## Required compatibility layers
 
 1. **Store abstraction:** define a narrow database interface and implement PostgreSQL pool/transaction semantics separately from MySQL; do not mechanically replace `mysql2` imports.
