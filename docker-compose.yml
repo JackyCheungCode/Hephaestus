@@ -1,0 +1,11 @@
+services:
+  hephaestus:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    volumes:
+      - hephaestus_data:/app/prisma
+    restart: unless-stopped
+volumes:
+  hephaestus_data:
