@@ -1,6 +1,14 @@
 name: Validate pinned GoodJob upstream
 
 on:
+  push:
+    branches:
+      - migration/goodjob-cloudflare-supabase
+    paths:
+      - "docs/migration/**"
+      - ".github/workflows/goodjob-source-validation.yml"
+      - "scripts/migration/**"
+      - "tests/migration/**"
   workflow_dispatch:
   pull_request:
     branches:
