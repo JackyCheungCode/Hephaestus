@@ -1,6 +1,7 @@
 # Migration validation checklist
 
 ## Source baseline
+- [x] Document the exact Run #74 CLI warm-pool failure, isolated reproduction, and source-level investigation steps in `docs/migration/CLI_WARM_TEST_FAILURE_TRIAGE.md` (commit `ad7e993fb31ce2b4ffe35ac678bbbd1861c0ee64`). Root cause remains unverified; the test assertion is intentionally unchanged.
 - [x] Pin upstream GoodJob revision: `30928c297646597fd7d52ee15ca93236bf0bd2e5`.
 - [x] Add isolated GitHub Actions workflow at `.github/workflows/goodjob-source-validation.yml`. It checks out the pinned upstream source, records toolchain versions, runs `npm ci`, `npm run build`, and `npm test`.
 - [x] Run the workflow against the pinned revision. First run: root `npm ci` succeeded (638 packages added; audit reported 36 vulnerabilities: 7 moderate, 25 high, 4 critical); build failed in the separately-installed WhatsApp frontend because its dependencies were not installed by root workspaces. This exposed a workflow setup issue, not yet a confirmed upstream source defect.
