@@ -10,7 +10,7 @@ This document records implementation risks found in source inspection. It is not
 - Backend code imports `Pool` / `RowDataPacket` from `mysql2/promise` across many domain modules. Changing the connection driver alone will not make SQL portable.
 - Direct MySQL syntax is present, e.g. `backend/src/app-settings.ts` uses `VALUES (?, ?, NOW(3)) ON DUPLICATE KEY UPDATE ... VALUES(setting_value)`; `backend/src/iam/platform-mfa.ts` uses the same upsert form.
 - `backend/src/iam/iam-business-tenant-migration.ts` queries `information_schema.columns` and `DATABASE()`, so schema introspection/migration utilities also require a PostgreSQL implementation.
-- The WhatsApp plugin has a PostgreSQL adapter, but its documented production deployment shares the CRM's MySQL 8 database. That adapter is not evidence that all schema, SQL, session, or transaction behavior is compatible with Supabase.
+- The WhatsApp plugin config parser accepts `pglite`, `postgres`, and `mysql`, and a PostgreSQL adapter exists, but its production deployment guide explicitly requires `DATABASE_CLIENT=mysql` and the same MySQL 8 database as the CRM. The plugin's production runtime rejects PostgreSQL. Treat PostgreSQL support as local/dev or migration tooling, not a production-ready Supabase adapter.
 
 ## Required compatibility layers
 
@@ -34,3 +34,9 @@ This document records implementation risks found in source inspection. It is not
 ## Safety boundary
 
 No SQL in this document has been executed. No Supabase schema/data, Cloudflare resources, production secrets, DNS, or deployment workflows have been changed.
+
+## WhatsApp-specific runtime gate
+
+The pinned plugin's production deployment guide explicitly mandates `DATABASE_CLIENT=mysql` and a shared GoodJob CRM MySQL database. Therefore, moving the CRM to Supabase PostgreSQL also requires a deliberate WhatsApp production redesign; simply setting `DATABASE_CLIENT=postgres` is not supported. Preserve the existing WhatsApp provider interface and evaluate two isolated options: (a) port/test its repository, schema migrations, transaction behavior and production config for PostgreSQL; or (b) keep it as a separately deployed, private Node.js service with a controlled adapter while CRM data ownership is redesigned. The second option still needs an explicit cross-database contract and cannot pretend both systems share one transaction.
+
+The source architecture also documents an official Meta Cloud API provider alongside Baileys. For production-critical messaging, evaluate Meta's official channel separately from Baileys' non-official WhatsApp Web protocol; this is a product/runtime decision, not something the Cloudflare Worker runtime automatically solves.
