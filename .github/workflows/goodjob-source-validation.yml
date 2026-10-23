@@ -8,6 +8,8 @@ on:
     paths:
       - "docs/migration/**"
       - ".github/workflows/goodjob-source-validation.yml"
+      - "scripts/migration/**"
+      - "tests/migration/**"
 
 permissions:
   contents: read
@@ -31,6 +33,11 @@ jobs:
           repository: huangguojia/GoodJob
           ref: 30928c297646597fd7d52ee15ca93236bf0bd2e5
           path: goodjob-source
+
+      - name: Inventory pinned MySQL schema
+        run: |
+          python scripts/migration/inventory_mysql_schema.py goodjob-source/backend/schema.mysql.sql --output migration-artifacts/mysql-schema-inventory.json
+          python -m unittest discover -s tests/migration -v
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -74,5 +81,6 @@ jobs:
           path: |
             goodjob-source/npm-debug.log
             goodjob-source/**/npm-debug.log
+            migration-artifacts/mysql-schema-inventory.json
           if-no-files-found: ignore
           retention-days: 7
