@@ -3,6 +3,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npx prisma generate
-EXPOSE 3000
-CMD ["sh","-c","npx prisma db push && npm run dev"]
+EXPOSE 8787
+CMD ["sh","-c","npm run d1:local && npm run dev:worker"]
