@@ -66,3 +66,7 @@ The source-validation workflow does not deploy anything and does not access prod
 - [x] Record run #99 (`39926659632`) in `docs/migration/DEPENDENCY_AUDIT_TRIAGE.md`: pinned-source build succeeded; WhatsApp plugin suite passed 360 tests with 9 skipped; isolated `tests/cli-warm.test.ts` passed 6/6; audit/SBOM artifacts regenerated and retained. This confirms the temporary lifecycle guard under CI, not vulnerability remediation, PostgreSQL readiness, or production deployment.
 - [ ] Review run #99 audit JSONs and remediate confirmed dependency advisories in isolated, narrowly scoped migration-branch commits; rerun builds and all tests after each change.
 - [ ] Complete PostgreSQL compatibility/integration gates, license review, and isolated preview verification. Production deployment remains unauthorized and untouched.
+
+- [x] Downloaded and inspected run #99 audit JSONs and documented advisory-level candidate fixes/hold items in `docs/migration/DEPENDENCY_AUDIT_TRIAGE.md` (commit `978c258f9c0de845ed51ef719ed0718d7747d294`).
+- [ ] Apply first targeted dependency remediation in the temporary pinned-source validation checkout: `concurrently@9.2.5` in both scopes; `undici@6.29.1` in WhatsApp; upgrade the MCP client/server pair (and verify the matching `@modelcontextprotocol/node` package) to a compatible fixed release. Preserve a clean lockfile diff and rerun the full CI gates before calling any item fixed.
+- [ ] Review `xlsx` (no fix reported), DOMPurify usage, and major-version holds for `whatsapp-web.js` / `vitest` separately; no forced upgrades.
