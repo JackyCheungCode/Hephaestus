@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from audit_mysql_dialect import inventory
+from scripts.migration.audit_mysql_dialect import inventory
 
 
 class MysqlDialectAuditTests(unittest.TestCase):
