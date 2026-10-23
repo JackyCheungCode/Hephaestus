@@ -62,3 +62,7 @@
 
 ## Safety boundary
 The source-validation workflow does not deploy anything and does not access production secrets. The existing `deploy-hephaestus.yml` workflow remains unchanged and explicitly deploys `main`.
+
+- [x] Record run #99 (`39926659632`) in `docs/migration/DEPENDENCY_AUDIT_TRIAGE.md`: pinned-source build succeeded; WhatsApp plugin suite passed 360 tests with 9 skipped; isolated `tests/cli-warm.test.ts` passed 6/6; audit/SBOM artifacts regenerated and retained. This confirms the temporary lifecycle guard under CI, not vulnerability remediation, PostgreSQL readiness, or production deployment.
+- [ ] Review run #99 audit JSONs and remediate confirmed dependency advisories in isolated, narrowly scoped migration-branch commits; rerun builds and all tests after each change.
+- [ ] Complete PostgreSQL compatibility/integration gates, license review, and isolated preview verification. Production deployment remains unauthorized and untouched.
