@@ -20,7 +20,7 @@ Pinned upstream: `huangguojia/GoodJob@30928c297646597fd7d52ee15ca93236bf0bd2e5`
 
 ## CI evidence
 
-The first pinned-source CI dependency install completed with npm reporting 36 vulnerabilities (7 moderate, 25 high, 4 critical). This is a raw install-time audit summary, not a triaged finding list. Before release, capture `npm audit --json` for both root and WhatsApp plugin lockfiles, classify production reachability and exploitability, and document accepted risks or upgrades. Avoid automatic `npm audit fix --force` because it can introduce breaking dependency changes.
+The first pinned-source CI dependency install completed with npm reporting 36 vulnerabilities (7 moderate, 25 high, 4 critical). This is a raw install-time audit summary, not a triaged finding list. The validation workflow now captures `npm audit --json` reports for both the root workspace and standalone WhatsApp plugin as artifacts (`npm-audit-root.json` and `npm-audit-whatsapp.json`) when dependency installation succeeds. Review the next completed run's reports, classify production reachability and exploitability, and document accepted risks or upgrades. Avoid automatic `npm audit fix --force` because it can introduce breaking dependency changes.
 
 ## Safety boundary
 
