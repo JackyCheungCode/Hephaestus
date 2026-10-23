@@ -5,8 +5,11 @@
 - [x] Add isolated GitHub Actions workflow at `.github/workflows/goodjob-source-validation.yml`. It checks out the pinned upstream source, records toolchain versions, runs `npm ci`, `npm run build`, and `npm test`.
 - [x] Run the workflow against the pinned revision. First run: root `npm ci` succeeded (638 packages added; audit reported 36 vulnerabilities: 7 moderate, 25 high, 4 critical); build failed in the separately-installed WhatsApp frontend because its dependencies were not installed by root workspaces. This exposed a workflow setup issue, not yet a confirmed upstream source defect.
 - [x] Correct the workflow to install `whatsapp-plugin/package-lock.json` separately and to run tests even when the build step fails (provided both installs succeed).
+- [x] Add `scripts/migration/audit_mysql_dialect.py` to produce path/line-level matches for driver imports, MySQL upserts, `INSERT IGNORE`, timestamp functions, metadata queries, row locks, JSON functions, and placeholders; add unit tests and retain its JSON output as a workflow artifact.
+- [x] Disable concurrency cancellation for the validation workflow so a new documentation commit does not automatically cancel an expensive build/test run.
 - [x] Confirm corrected workflow run #16: the schema inventory extractor and its two unit tests passed; root and standalone WhatsApp dependency installation is in progress.
-- [ ] Confirm workflow #16 build, full test suite and isolated retry result; do not claim test-suite pass until it finishes.
+- [x] Record workflow #16 outcome: build was cancelled, full test suite failed, and isolated `whatsapp-plugin/tests/cli-warm.test.ts` retry failed. The warm test expected one CLI start but observed two.
+- [ ] Re-run validation after the dialect-audit workflow changes; confirm build, full suite, and isolated retry. Do not claim test-suite pass until it finishes.
 - [ ] Record upstream license files and dependency/license report.
 - [ ] Run `npm run test:e2e` separately after confirming browser/system prerequisites.
 - [ ] Record all failures without masking or changing expected behavior.
