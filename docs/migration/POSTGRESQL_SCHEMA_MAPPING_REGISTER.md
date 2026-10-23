@@ -5,6 +5,12 @@ Pinned source: `huangguojia/GoodJob@30928c297646597fd7d52ee15ca93236bf0bd2e5`
 
 Use one row per source table and a separate column-level register before writing Supabase migrations. Do not treat the lexical inventory JSON as a normalized schema or as executable DDL.
 
+## Pinned schema inventory snapshot (run #38)
+
+The inventory artifact for the pinned source revision reports 132 tables, 1,908 columns, 132 primary keys, 110 unique keys/constraints, 116 secondary indexes, 109 foreign keys, 6 recognized CHECK constraints, and 8 generated columns. Source schema blob: `e833e94fcdcd765d930d6439d66302374b3ebe18`.
+
+The dialect audit scanned 607 files and emitted 5,095 findings: 4,091 placeholder matches, 287 JSON type matches, 182 DATETIME precision matches, 150 millisecond-time matches, 70 row-lock matches, 67 information-schema matches, 59 upsert matches, and 56 driver-import matches. These are parser/scanner findings, not reviewed migration work estimates. Counts overlap and must be classified by runtime path and semantic intent. The low number of recognized CHECK constraints does not prove business invariants are fully constrained in SQL. Run #38 built successfully but failed tests as documented in `VALIDATION_CHECKLIST.md`.
+
 ## Table-level register
 
 | Field | Required review |
