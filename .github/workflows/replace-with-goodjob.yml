@@ -24,7 +24,26 @@ jobs:
           path: .goodjob-upstream
           fetch-depth: 1
 
-      - name: Replace repository files with GoodJob source
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: .goodjob-upstream/package-lock.json
+
+      - name: Install GoodJob dependencies
+        working-directory: .goodjob-upstream
+        run: npm ci
+
+      - name: Build GoodJob
+        working-directory: .goodjob-upstream
+        run: npm run build
+
+      - name: Run GoodJob tests
+        working-directory: .goodjob-upstream
+        run: npm test
+
+      - name: Replace repository files with validated GoodJob source
         shell: bash
         run: |
           rsync -a --delete --exclude='/.git' --exclude='/.goodjob-upstream' .goodjob-upstream/ ./
@@ -38,18 +57,3 @@ jobs:
             git commit -m "Replace Hephaestus app with upstream GoodJob CRM"
             git push origin HEAD:main
           fi
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build GoodJob
-        run: npm run build
-
-      - name: Run tests
-        run: npm test
