@@ -193,7 +193,7 @@ def inventory(sql: str) -> dict[str, Any]:
         "tables": len(tables),
         "columns": sum(len(t["columns"]) for t in tables),
         "primary_keys": sum(c["kind"] == "primary_key" for t in tables for c in t["constraints"]) + sum("PRIMARY KEY" in col["declaration"].upper() for t in tables for col in t["columns"]),
-        "unique_constraints": sum(c["kind"] == "unique" for t in tables for c in t["constraints"]) + sum(re.search(r"\\bUNIQUE\\b", col["declaration"], re.IGNORECASE) is not None for t in tables for col in t["columns"]),
+        "unique_constraints": sum(c["kind"] == "unique" for t in tables for c in t["constraints"]) + sum(re.search(r"\bUNIQUE\b", col["declaration"], re.IGNORECASE) is not None for t in tables for col in t["columns"]),
         "indexes": sum(c["kind"] == "index" for t in tables for c in t["constraints"]),
         "foreign_keys": sum(c["kind"] == "foreign_key" for t in tables for c in t["constraints"]),
         "checks": sum(c["kind"] == "check" for t in tables for c in t["constraints"]),
