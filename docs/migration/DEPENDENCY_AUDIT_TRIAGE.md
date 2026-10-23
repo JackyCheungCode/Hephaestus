@@ -43,6 +43,10 @@ These are separate npm audit scopes. Findings overlap between scopes and **must 
 6. Produce an SBOM and direct/transitive license inventory for both dependency scopes. Separately review root Apache-2.0 and WhatsApp plugin GPL-3.0-only distribution obligations, including combined-work boundaries and third-party/provider terms.
 7. Do not deploy or modify production resources as part of this queue.
 
+## Follow-up validation — run #74
+
+Run #74 (`39924298660`, [workflow](https://github.com/JackyCheungCode/Hephaestus/actions/runs/39924298660), artifact `12488164989`) confirms that both audit JSON files and both CycloneDX 1.5 SBOMs were generated and passed JSON/structure checks. The SBOMs contain 514 root-scope components and 384 standalone WhatsApp components. License metadata is absent for 2 root components (`async@0.2.10`, `qrcode-terminal@0.12.0`) and 1 WhatsApp component (`xmlhttprequest-ssl@2.1.2`); see `docs/migration/SBOM_LICENSE_TRIAGE.md`. These results validate artifact production, not vulnerability remediation or legal compliance.
+
 ## Current validation status
 
 Run #58: both dependency installs and both audit steps succeeded; all upstream package builds succeeded. The complete suite failed with 359 passed, 1 failed, 9 skipped; the isolated retry reproduced the CLI warm test failure at `whatsapp-plugin/tests/cli-warm.test.ts:210` (expected one process start, observed two). Dependency triage is now evidence-backed but **not complete**. No dependency upgrades have been applied by this register.
