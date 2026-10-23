@@ -38,6 +38,7 @@ jobs:
       - name: Inventory pinned MySQL schema
         run: |
           python scripts/migration/inventory_mysql_schema.py goodjob-source/backend/schema.mysql.sql --output migration-artifacts/mysql-schema-inventory.json
+          python scripts/migration/audit_mysql_dialect.py goodjob-source --output migration-artifacts/mysql-dialect-audit.json
           python -m unittest discover -s tests/migration -v
 
       - name: Set up Node.js
@@ -89,5 +90,6 @@ jobs:
             goodjob-source/npm-debug.log
             goodjob-source/**/npm-debug.log
             migration-artifacts/mysql-schema-inventory.json
+            migration-artifacts/mysql-dialect-audit.json
           if-no-files-found: ignore
           retention-days: 7
