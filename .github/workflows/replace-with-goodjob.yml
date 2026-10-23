@@ -27,7 +27,7 @@ jobs:
       - name: Replace repository files with GoodJob source
         shell: bash
         run: |
-          rsync -a --delete --exclude='/.git' .goodjob-upstream/ ./
+          rsync -a --delete --exclude='/.git' --exclude='/.goodjob-upstream' .goodjob-upstream/ ./
           rm -rf .goodjob-upstream
           git add -A
           if git diff --cached --quiet; then
