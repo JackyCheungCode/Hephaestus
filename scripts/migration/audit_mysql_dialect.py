@@ -59,7 +59,7 @@ def inventory(root: Path) -> dict[str, Any]:
             sql_context = _is_sql_context(path, line)
             for name, pattern in PATTERNS.items():
                 # SQL syntax/type/placeholder rules only apply in SQL-like contexts.
-                if name != "mysql_driver_import" and name != "for_update_lock" and not sql_context:
+                if name != "mysql_driver_import" and not sql_context:
                     continue
                 # The generic JSON word is only meaningful in DDL or SQL statements.
                 if name == "mysql_json_type" and path.suffix.lower() != ".sql" and not sql_context:
