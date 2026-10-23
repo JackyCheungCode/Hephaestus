@@ -1,11 +1,11 @@
 # Migration validation checklist
 
 ## Source baseline
-- [ ] Record upstream GoodJob commit SHA and license files.
-- [ ] Record Node.js/npm versions and `npm ci` output.
-- [ ] `npm run build`
-- [ ] `npm test`
-- [ ] `npm run test:e2e` (confirm script exists before relying on it)
+- [x] Pin upstream GoodJob revision: `30928c297646597fd7d52ee15ca93236bf0bd2e5`.
+- [x] Add isolated GitHub Actions workflow at `.github/workflows/goodjob-source-validation.yml`. It checks out the pinned upstream source, records toolchain versions, runs `npm ci`, `npm run build`, and `npm test`.
+- [ ] Run the workflow and record the actual result/logs; adding the workflow is not evidence that build/tests passed.
+- [ ] Record upstream license files and dependency/license report.
+- [ ] Run `npm run test:e2e` separately after confirming browser/system prerequisites.
 - [ ] Record all failures without masking or changing expected behavior.
 
 ## PostgreSQL
@@ -19,7 +19,7 @@
 - [ ] Test import counts/checksums and repeatability.
 
 ## Cloudflare
-- [ ] Worker build/compatibility check and `wrangler deploy --dry-run`.
+- [ ] Worker build/compatibility check and `wrangler deploy --dry-run` in a preview-only workflow.
 - [ ] Queues retry/backoff/dead-letter and duplicate-delivery tests.
 - [ ] Workflow resume/retry/timeout tests.
 - [ ] Cron idempotency and overlapping invocation tests.
@@ -37,3 +37,6 @@
 - [ ] Reconciliation report approved.
 - [ ] Rollback steps rehearsed.
 - [ ] Written authorization for production database, Worker, DNS, secrets and deployment changes.
+
+## Safety boundary
+The source-validation workflow does not deploy anything and does not access production secrets. The existing `deploy-hephaestus.yml` workflow remains unchanged and explicitly deploys `main`.
